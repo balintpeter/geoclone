@@ -98,7 +98,7 @@ export const ResultWindow = ({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={() => closeModal(score)}>
-          {round < 2 ? "Next Round" : "New Game"}
+          {round < 2 ? "Next Round" : "Új játék"}
         </Button>
       </Modal.Footer>
     </Modal>
