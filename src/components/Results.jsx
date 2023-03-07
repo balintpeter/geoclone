@@ -72,7 +72,7 @@ const Results = ({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>
-          {round < maxRounds - 1 ? "Next round" : "New game"}
+          {round < maxRounds ? "Next round" : "New game"}
         </Button>
       </Modal.Footer>
     </Modal>
