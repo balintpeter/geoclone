@@ -4,13 +4,18 @@ import { getDistance } from "../utils/mapHelper";
 import GoogleMap from "google-map-react";
 import Marker from "./Marker";
 
-const Results = ({ API_KEY, isOpen, handleClose, position, guess }) => {
-  const { distance, text } = getDistance(position, guess);
-  const score =
-    (5000000 - distance) / 1000 > 0
-      ? Math.round((5000000 - distance) / 1000)
-      : 0;
-
+const Results = ({
+  API_KEY,
+  isOpen,
+  handleClose,
+  position,
+  round,
+  maxRounds,
+  guess,
+  score,
+  text,
+  totalScore,
+}) => {
   const handleGoogleMapApi = (google) => {
     var line = new google.maps.Polyline({
       path: [guess, position],
@@ -23,13 +28,17 @@ const Results = ({ API_KEY, isOpen, handleClose, position, guess }) => {
   };
   return (
     <Modal size="lg" show={isOpen} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Results</Modal.Title>
+      <Modal.Header>
+        <Modal.Title>
+          Results {maxRounds}/{round}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         Distance: {text}
         <br />
         Score: {score}
+        <br />
+        <strong>Total Score: {totalScore}</strong>
         <br />
         <div style={{ width: "100%", height: "500px" }}>
           <GoogleMap
@@ -63,7 +72,7 @@ const Results = ({ API_KEY, isOpen, handleClose, position, guess }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>
-          Next round
+          {round < maxRounds - 1 ? "Next round" : "New game"}
         </Button>
       </Modal.Footer>
     </Modal>
