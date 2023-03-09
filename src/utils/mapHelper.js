@@ -24,7 +24,7 @@ export const getDistance = (p1, p2) => {
   } else {
     text = Math.round(d) + " m";
   }
-  return { distance: d, text: text, meters: d }; // returns the distance in meter
+  return d; // returns the distance in meter
 };
 
 export const getRandom = (arr, n) => {
@@ -46,15 +46,15 @@ export async function getRandomStreetViewCoordinate() {
   let coords = getRandom(locations, 1)[0];
   let chosenPos = null;
   while (!chosenPos) {
-    console.log("Place", `${coords.city}, ${coords.country}`);
+    // console.log("Place", `${coords.city}, ${coords.country}`);
 
     // Check if the coordinate has a corresponding Street View panorama
     await isStreetViewAvailable(coords.lat, coords.lng, sv)
       .then(({ data }) => {
-        console.log("pano location", {
-          lat: data.location.latLng.lat(),
-          lng: data.location.latLng.lng(),
-        });
+        // console.log("pano location", {
+        //   lat: data.location.latLng.lat(),
+        //   lng: data.location.latLng.lng(),
+        // });
         // console.log("returned pos", { lat: coords.lat, lng: coords.lng });
         // chosenPos = { lat: coords.lat, lng: coords.lng };
         chosenPos = {
@@ -62,7 +62,7 @@ export async function getRandomStreetViewCoordinate() {
           lng: data.location.latLng.lng(),
         };
       })
-      .catch((err) => console.log("error"));
+      .catch((err) => console.log(err));
 
     coords = getRandom(locations, 1)[0];
   }

@@ -1,29 +1,28 @@
 import "./App.css";
 import { useState, useEffect } from "react";
+import { getScore } from "./utils/gameManager";
 import StreetView from "./components/StreetView";
 import OverlayMap from "./components/OverlayMap";
 import Timer from "./components/Timer";
 import Results from "./components/Results";
 import { getRandomStreetViewCoordinate, getDistance } from "./utils/mapHelper";
-import HighScores from "./components/HighScores";
+import Rounds from "./components/Rounds";
 const MAX_ROUNDS = 5;
+const MAX_TIME = 10;
 const App = () => {
   const API_KEY = "AIzaSyBEzsiB9ULE2O1_4Jkt5SKVb8HAtcmWLZY";
-  const [time, setTime] = useState(60);
+  const [gameState, setGameState] = useState("GUESS");
+  const [time, setTime] = useState(MAX_TIME);
   const [timing, setTiming] = useState(false);
   const [round, setRound] = useState(0);
   const [position, setPosition] = useState();
   const [guessPosition, setGuessPosition] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [score, setScore] = useState(0);
-  const [text, setText] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
 
   useEffect(() => {
-    getRandomStreetViewCoordinate().then((data) => {
-      setPosition(data);
-      setTiming(true);
-    });
+    newRound();
   }, []);
 
   useEffect(() => {
@@ -34,25 +33,45 @@ const App = () => {
         setTime((time) => time - 1);
       }, 1000);
     else {
-      alert("Time's up!");
-      setTiming(false);
+      endRound();
     }
   }, [time, timing]);
 
-  const guess = (_position) => {
-    setGuessPosition(_position);
-    const { distance, text, meters } = getDistance(_position, position);
-    const maxDistanceScore = 6000;
-    const maxTimeScore = 4000;
-    const score =
-      (5000000 - distance) / 1000 > 0
-        ? Math.round((5000000 - distance) / 1000)
-        : 0;
+  const endRound = (_guessPosition = null) => {
+    setTiming(false);
+    setGuessPosition(_guessPosition);
+    const score = _guessPosition
+      ? getScore(getDistance(_guessPosition, position), time)
+      : 0;
     setScore(score);
-    setText(text);
     setTotalScore(score + totalScore);
 
     setIsModalOpen(true);
+    setGameState("RESULTS");
+  };
+
+  const newRound = () => {
+    getRandomStreetViewCoordinate().then((data) => {
+      setPosition(data);
+      setTime(MAX_TIME);
+      setTiming(true);
+      setGameState("GUESS");
+    });
+  };
+
+  const newGame = () => {
+    setRound(0);
+    setTotalScore(0);
+    newRound();
+    setIsModalOpen(false);
+  };
+
+  const nextRound = () => {
+    {
+      setRound(round + 1);
+      newRound();
+      setIsModalOpen(false);
+    }
   };
 
   return (
@@ -60,7 +79,8 @@ const App = () => {
       {position && (
         <>
           <Timer time={time} />
-          <OverlayMap API_KEY={API_KEY} guess={guess} />
+          <Rounds maxRounds={MAX_ROUNDS} round={round + 1} />
+          <OverlayMap API_KEY={API_KEY} guess={endRound} />
           {position ? (
             <StreetView API_KEY={API_KEY} position={position} />
           ) : null}
@@ -70,27 +90,15 @@ const App = () => {
               isOpen={isModalOpen}
               handleClose={() => {
                 if (round + 1 < MAX_ROUNDS) {
-                  setPosition(null);
-                  setRound(round + 1);
-                  getRandomStreetViewCoordinate().then((data) =>
-                    setPosition(data)
-                  );
-                  setIsModalOpen(false);
+                  nextRound();
                 } else {
-                  setPosition(null);
-                  setRound(0);
-                  setTotalScore(0);
-                  getRandomStreetViewCoordinate().then((data) =>
-                    setPosition(data)
-                  );
-                  setIsModalOpen(false);
+                  newGame();
                 }
               }}
               round={round + 1}
               maxRounds={MAX_ROUNDS}
               guess={guessPosition}
               score={score}
-              text={text}
               totalScore={totalScore}
               position={position}
             />

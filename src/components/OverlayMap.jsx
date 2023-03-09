@@ -32,6 +32,7 @@ const OverlayMap = ({ API_KEY, guess }) => {
       <Button
         variant="primary"
         // block
+        style={{ width: "100%" }}
         onClick={() => {
           if (marker) {
             guess(marker);
