@@ -8,7 +8,7 @@ import Results from "./components/Results";
 import { getRandomStreetViewCoordinate, getDistance } from "./utils/mapHelper";
 import Rounds from "./components/Rounds";
 const MAX_ROUNDS = 5;
-const MAX_TIME = 10;
+const MAX_TIME = 90;
 const App = () => {
   const API_KEY = "AIzaSyBEzsiB9ULE2O1_4Jkt5SKVb8HAtcmWLZY";
   const [gameState, setGameState] = useState("GUESS");
