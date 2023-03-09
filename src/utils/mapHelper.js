@@ -24,7 +24,7 @@ export const getDistance = (p1, p2) => {
   } else {
     text = Math.round(d) + " m";
   }
-  return { distance: d, text: text }; // returns the distance in meter
+  return { distance: d, text: text, meters: d }; // returns the distance in meter
 };
 
 export const getRandom = (arr, n) => {
@@ -51,7 +51,16 @@ export async function getRandomStreetViewCoordinate() {
     // Check if the coordinate has a corresponding Street View panorama
     await isStreetViewAvailable(coords.lat, coords.lng, sv)
       .then(({ data }) => {
-        chosenPos = { lat: coords.lat, lng: coords.lng };
+        console.log("pano location", {
+          lat: data.location.latLng.lat(),
+          lng: data.location.latLng.lng(),
+        });
+        // console.log("returned pos", { lat: coords.lat, lng: coords.lng });
+        // chosenPos = { lat: coords.lat, lng: coords.lng };
+        chosenPos = {
+          lat: data.location.latLng.lat(),
+          lng: data.location.latLng.lng(),
+        };
       })
       .catch((err) => console.log("error"));
 
@@ -62,10 +71,11 @@ export async function getRandomStreetViewCoordinate() {
 }
 
 function isStreetViewAvailable(lat, lng, sv) {
-  let STREETVIEW_MAX_DISTANCE = 100;
+  let STREETVIEW_MAX_DISTANCE = 200;
   let latLng = new window.google.maps.LatLng(lat, lng);
   let promise = sv.getPanorama({
     location: latLng,
+    preference: window.google.maps.StreetViewPreference.NEAREST,
     radius: STREETVIEW_MAX_DISTANCE,
     source: window.google.maps.StreetViewSource.OUTDOOR,
   });
