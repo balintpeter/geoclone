@@ -51,6 +51,7 @@ const App = () => {
   };
 
   const newRound = () => {
+    setPosition(null);
     getRandomStreetViewCoordinate().then((data) => {
       setPosition(data);
       setTime(MAX_TIME);
@@ -76,10 +77,10 @@ const App = () => {
 
   return (
     <div className="App">
+      <Timer time={time} />
+      <Rounds maxRounds={MAX_ROUNDS} round={round + 1} />
       {position && (
         <>
-          <Timer time={time} />
-          <Rounds maxRounds={MAX_ROUNDS} round={round + 1} />
           <OverlayMap API_KEY={API_KEY} guess={endRound} />
           {position ? (
             <StreetView API_KEY={API_KEY} position={position} />
